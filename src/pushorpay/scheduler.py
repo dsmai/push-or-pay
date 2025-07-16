@@ -1,6 +1,6 @@
 from apscheduler.schedulers.background import BackgroundScheduler  # type: ignore
 from pushorpay.db import supabase_client
-from pushorpay.checker import solved_leetcode_today
+from pushorpay.checker import get_leetcode_count_today
 from pushorpay.notifier import post_to_discord
 from datetime import date
 import asyncio
@@ -36,7 +36,8 @@ async def daily_task() -> None:
     users = supabase_client.table("users").select("*").execute().data
     missed: list[str] = []
     for user in users:
-        did_leetcode_today = await solved_leetcode_today(user["leetcode_username"])
+        leetcode_count_today = await get_leetcode_count_today(user["leetcode_username"])
+        did_leetcode_today = True if leetcode_count_today else False
         fine = user["daily_fine"] if not did_leetcode_today else 0.0
         new_checkin: CheckinInsert = {
             "user_id": user["id"],

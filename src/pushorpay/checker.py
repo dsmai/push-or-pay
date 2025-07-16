@@ -9,7 +9,7 @@ load_dotenv()
 """Handle API checkers (Github commit/Leetcode submission)"""
 
 
-async def solved_leetcode_today(leetcode_username: str, max_retries: int = 3) -> bool:
+async def get_leetcode_count_today(leetcode_username: str, max_retries: int = 3) -> int:
     """
     Check if user solved LeetCode problems today with retry logic
 
@@ -19,7 +19,7 @@ async def solved_leetcode_today(leetcode_username: str, max_retries: int = 3) ->
     - None: API unavailable (don't penalize user)
     """
     if not leetcode_username:
-        return False
+        return 0
 
     LEETCODE_API_URL = os.environ["LEETCODE_API_URL"]
     leetcode_url = f"{LEETCODE_API_URL}/{leetcode_username}"
@@ -46,16 +46,18 @@ async def solved_leetcode_today(leetcode_username: str, max_retries: int = 3) ->
 
                     # Dictionary look up to see if today_ts is in leetcode_submission_calendar
                     # Had to convert back to string
-                    problems_solved_today = leetcode_submission_calendar[str(today_ts)]
+                    problems_solved_today = leetcode_submission_calendar.get(
+                        str(today_ts), 0
+                    )
 
                     print(
                         f"{leetcode_username} solved {problems_solved_today} problems today"
                     )
-                    return str(today_ts) in leetcode_submission_calendar
+                    return problems_solved_today
 
                 elif response.status_code == 404:
                     print(f"Leetcode user '{leetcode_username}' not found!")
-                    return False
+                    return 0
 
                 else:
                     print(
@@ -75,10 +77,10 @@ async def solved_leetcode_today(leetcode_username: str, max_retries: int = 3) ->
     print(
         f"🚫 LeetCode API unavailable for {leetcode_username} after {max_retries} attempts"
     )
-    return True
+    return 0
 
 
-if __name__ == "__main__":
-    print("This only runs when executed directly!")
-    result = asyncio.run(solved_leetcode_today("dsmai"))
-    print(f"Result: {result}")
+# if __name__ == "__main__":
+#     print("This only runs when executed directly!")
+#     result = asyncio.run(get_leetcode_count_today("dsmai"))
+#     print(f"Result: {result}")
