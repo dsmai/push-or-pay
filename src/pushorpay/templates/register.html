@@ -1,0 +1,47 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Register your Leetcode daily commitment</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/tailwindcss@3/dist/tailwind.min.css"
+      rel="stylesheet"
+    />
+  </head>
+  <body class="bg-gray-100 p-6">
+    <div class="max-w-md mx-auto bg-white p-6 rounded shadow">
+      <h1 class="text-2xl font-semibold mb-4">Register</h1>
+      <form method="post" action="/register" class="space-y-4">
+        <input
+          name="name"
+          placeholder="Name"
+          required
+          class="w-full p-2 border rounded"
+        />
+        <input
+          name="github"
+          placeholder="GitHub username"
+          class="w-full p-2 border rounded"
+        />
+        <input
+          name="leetcode_username"
+          placeholder="LeetCode username"
+          class="w-full p-2 border rounded"
+        />
+        <input
+          type="number"
+          name="daily_fine"
+          placeholder="Daily fine ($)"
+          step="0.01"
+          required
+          class="w-full p-2 border rounded"
+        />
+        <button
+          type="submit"
+          class="w-full bg-blue-600 text-white py-2 rounded"
+        >
+          Register
+        </button>
+      </form>
+    </div>
+  </body>
+</html>

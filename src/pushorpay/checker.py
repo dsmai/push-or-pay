@@ -9,9 +9,7 @@ load_dotenv()
 """Handle API checkers (Github commit/Leetcode submission)"""
 
 
-async def leetcode_solved_today(
-    username: str = "dsmai", max_retries: int = 3
-) -> bool | None:
+async def solved_leetcode_today(leetcode_username: str, max_retries: int = 3) -> bool:
     """
     Check if user solved LeetCode problems today with retry logic
 
@@ -20,11 +18,11 @@ async def leetcode_solved_today(
     - False: User did NOT solve problems today
     - None: API unavailable (don't penalize user)
     """
-    if not username:
+    if not leetcode_username:
         return False
 
     LEETCODE_API_URL = os.environ["LEETCODE_API_URL"]
-    leetcode_url = f"{LEETCODE_API_URL}/{username}"
+    leetcode_url = f"{LEETCODE_API_URL}/{leetcode_username}"
 
     for attempt in range(max_retries):
         try:
@@ -50,11 +48,13 @@ async def leetcode_solved_today(
                     # Had to convert back to string
                     problems_solved_today = leetcode_submission_calendar[str(today_ts)]
 
-                    print(f"{username} solved {problems_solved_today} problems today")
+                    print(
+                        f"{leetcode_username} solved {problems_solved_today} problems today"
+                    )
                     return str(today_ts) in leetcode_submission_calendar
 
                 elif response.status_code == 404:
-                    print(f"Leetcode user '{username}' not found!")
+                    print(f"Leetcode user '{leetcode_username}' not found!")
                     return False
 
                 else:
@@ -72,11 +72,13 @@ async def leetcode_solved_today(
             await asyncio.sleep(wait_time)
 
     # All retries failed
-    print(f"🚫 LeetCode API unavailable for {username} after {max_retries} attempts")
-    return None
+    print(
+        f"🚫 LeetCode API unavailable for {leetcode_username} after {max_retries} attempts"
+    )
+    return True
 
 
 if __name__ == "__main__":
     print("This only runs when executed directly!")
-    result = asyncio.run(leetcode_solved_today())
+    result = asyncio.run(solved_leetcode_today("dsmai"))
     print(f"Result: {result}")
